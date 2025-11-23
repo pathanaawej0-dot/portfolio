@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aawej | The Visionary</title>
+    <title>Aawej | AI SaaS Architect</title>
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -23,7 +23,7 @@
             --accent: #8b5cf6; /* Vivid Violet */
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: var(--bg);
@@ -34,43 +34,50 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* --- CUSTOM CURSOR (FIXED) --- */
-        .cursor-dot, .cursor-outline {
-            position: fixed; top: 0; left: 0;
-            border-radius: 50%; z-index: 9999; pointer-events: none;
-            transform: translate(-50%, -50%);
+        /* --- DESKTOP CURSOR (Hidden on Mobile) --- */
+        @media (min-width: 769px) {
+            * { cursor: none; }
+            .cursor-dot, .cursor-outline {
+                position: fixed; top: 0; left: 0;
+                border-radius: 50%; z-index: 9999; pointer-events: none;
+                transform: translate(-50%, -50%);
+            }
+            .cursor-dot { width: 8px; height: 8px; background: white; }
+            .cursor-outline {
+                width: 50px; height: 50px;
+                border: 1px solid rgba(255,255,255,0.3);
+                background: transparent;
+            }
         }
-        .cursor-dot { width: 8px; height: 8px; background: white; }
-        .cursor-outline {
-            width: 50px; height: 50px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: transparent;
+
+        @media (max-width: 768px) {
+            .cursor-dot, .cursor-outline { display: none !important; }
+            * { cursor: auto !important; }
         }
 
         /* --- BACKGROUNDS --- */
         #webgl {
-            position: fixed; top: 0; left: 0; outline: none; z-index: -1; opacity: 0.6;
+            position: fixed; top: 0; left: 0; outline: none; z-index: -1; opacity: 0.5;
         }
         
-        /* The Nebula Glow */
         .aurora {
             position: fixed; top: 50%; left: 50%;
             width: 80vw; height: 80vw;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(0,0,0,0) 60%);
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(0,0,0,0) 60%);
             transform: translate(-50%, -50%);
             z-index: -2;
             pointer-events: none;
             animation: breathe 10s infinite ease-in-out;
         }
         @keyframes breathe {
-            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+            0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.1); }
         }
 
         .grain {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.07; z-index: 9998; pointer-events: none;
+            opacity: 0.06; z-index: 9998; pointer-events: none;
         }
 
         /* --- LAYOUT --- */
@@ -112,13 +119,17 @@
         /* --- NAV --- */
         nav {
             position: fixed; top: 0; left: 0; width: 100%;
-            padding: 40px 5vw;
+            padding: 30px 5vw;
             display: flex; justify-content: space-between; align-items: center;
             z-index: 100;
             mix-blend-mode: difference;
         }
-        .logo { font-family: 'Syncopate'; font-weight: 700; letter-spacing: 2px; font-size: 24px; }
-        .menu-item { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px; border-radius: 50px; }
+        .logo { font-family: 'Syncopate'; font-weight: 700; letter-spacing: 2px; font-size: 20px; }
+        .menu-item { 
+            font-size: 12px; text-transform: uppercase; letter-spacing: 2px; 
+            border: 1px solid rgba(255,255,255,0.3); padding: 10px 20px; border-radius: 50px; 
+            text-decoration: none; color: white;
+        }
 
         /* --- PROJECT CARDS (3D TILT) --- */
         .project-container {
@@ -126,7 +137,7 @@
             align-items: center;
             gap: 5vw;
             margin-top: 5vh;
-            perspective: 1000px; /* For 3D effect */
+            perspective: 1000px; 
         }
 
         .project-visual {
@@ -135,53 +146,59 @@
             background: #0a0a0a;
             position: relative;
             overflow: hidden;
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.1s ease-out; /* Smooth tilt */
+            transition: transform 0.1s ease-out;
             transform-style: preserve-3d;
+            cursor: pointer; /* Indicates clickable */
         }
 
-        .project-img {
+        /* Iframe wrapper to make it look like a window */
+        .iframe-wrapper {
             width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, #1f1f1f 0%, #000 100%);
+            position: relative;
+            overflow: hidden;
+            pointer-events: none; /* Clicks go to the container link */
         }
         
-        /* Abstract UI in CSS */
-        .ui-card {
-            width: 60%; height: 40%;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            position: absolute;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: translateZ(50px); /* Pop out effect */
+        iframe {
+            width: 100%; height: 100%;
+            border: none;
+            transform: scale(1);
+            opacity: 0.7;
+            transition: opacity 0.5s;
+        }
+        .project-visual:hover iframe { opacity: 1; }
+
+        .live-badge {
+            position: absolute; top: 20px; right: 20px;
+            background: #22c55e; color: black;
+            font-weight: 800; font-size: 12px;
+            padding: 6px 12px; border-radius: 100px;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
         }
 
-        .project-info h2 {
-            font-size: 4vw; margin-bottom: 20px;
-        }
+        .project-info h2 { font-size: 4vw; margin-bottom: 20px; }
+        
         .tags span {
             display: inline-block;
             border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 50px;
             font-size: 12px;
             margin-right: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: background 0.3s, color 0.3s;
         }
-        .tags span:hover { background: white; color: black; }
 
-        /* --- MAGNETIC BUTTON --- */
+        /* --- BUTTONS --- */
         .btn-magnetic {
             display: inline-block;
-            padding: 25px 50px;
+            padding: 20px 40px;
             border: 1px solid rgba(255,255,255,0.3);
             border-radius: 100px;
-            margin-top: 50px;
+            margin-top: 40px;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-size: 14px;
@@ -190,16 +207,9 @@
             overflow: hidden;
             text-decoration: none;
             color: white;
+            transition: all 0.3s;
         }
-        .btn-magnetic::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
-            z-index: -1;
-        }
-        .btn-magnetic:hover::before { transform: translateY(0); }
-        .btn-magnetic:hover { color: black; border-color: white; }
+        .btn-magnetic:hover { background: white; color: black; border-color: white; }
 
         /* --- PRELOADER --- */
         .preloader {
@@ -210,6 +220,16 @@
         .loader-text { font-family: 'Syncopate'; font-size: 24px; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1.mega-title { font-size: 14vw; margin-bottom: 1.5rem; }
+            p.subtitle { font-size: 1.1rem; }
+            .project-container { flex-direction: column; align-items: flex-start; gap: 30px; }
+            .project-visual { width: 100%; height: 40vh; }
+            .project-info h2 { font-size: 8vw; }
+            .section { padding: 80px 5vw; }
+        }
+
     </style>
 </head>
 <body>
@@ -218,15 +238,15 @@
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
     <div class="grain"></div>
-    <div class="aurora"></div> <!-- NEW: Nebula Glow -->
+    <div class="aurora"></div>
     
     <div class="preloader">
-        <div class="loader-text">INITIALIZING SYSTEM...</div>
+        <div class="loader-text">AAWEJ SYSTEM...</div>
     </div>
 
     <nav>
         <div class="logo hover-trigger">AAWEJ</div>
-        <div class="menu-item hover-trigger">Status: Available</div>
+        <a href="mailto:pathanaawej0@gmail.com" class="menu-item hover-trigger">Hire Me</a>
     </nav>
 
     <canvas id="webgl"></canvas>
@@ -242,7 +262,7 @@
             </h1>
             <p class="subtitle">
                 I don't just write code. I build engines of profit.<br>
-                From idea to deployed MVP in 7 days.
+                Full-Stack AI Developer. 7 Days to MVP.
             </p>
         </section>
 
@@ -250,45 +270,46 @@
         <section class="section">
             <div style="max-width: 900px;">
                 <h6 style="color: var(--accent); text-transform: uppercase; margin-bottom: 30px; letter-spacing: 2px; font-weight: 600;">The Methodology</h6>
-                <h2 style="font-size: 3.5vw; line-height: 1.3; font-weight: 400;">
+                <h2 style="font-size: clamp(24px, 3.5vw, 48px); line-height: 1.3; font-weight: 400;">
                     Traditional agencies are slow. They love meetings. I love shipping. 
                     Using <span style="color: #fff; border-bottom: 2px solid var(--accent);">AI-Native Workflows</span>, I compress 3 months of development into 1 week.
                 </h2>
             </div>
         </section>
 
-        <!-- SELECTED WORK -->
+        <!-- SELECTED WORK (SWAPKART) -->
         <section class="section">
-            <h6 style="color: var(--accent); text-transform: uppercase; margin-bottom: 50px; letter-spacing: 2px; font-weight: 600;">Selected Work 2025</h6>
+            <h6 style="color: var(--accent); text-transform: uppercase; margin-bottom: 50px; letter-spacing: 2px; font-weight: 600;">Selected Work</h6>
             
             <div class="project-container">
-                <div class="project-visual hover-trigger" id="tilt-card">
-                    <div class="project-img">
-                        <!-- Abstract UI Representation -->
-                        <div class="ui-card" style="top: 30%; left: 20%;"></div>
-                        <div class="ui-card" style="top: 40%; left: 30%; width: 50%; height: 30%; background: rgba(139, 92, 246, 0.2); border-color: var(--accent);"></div>
-                        <h3 style="font-family: 'Syncopate'; font-size: 3vw; color: white; position: absolute; bottom: 30px; right: 30px; opacity: 0.5;">SWAPKART</h3>
+                <!-- The Link to SwapKart -->
+                <a href="https://swapkart.vercel.app" target="_blank" class="project-visual hover-trigger" id="tilt-card">
+                    <div class="live-badge">LIVE DEMO</div>
+                    <div class="iframe-wrapper">
+                        <!-- Iframe preview of the real app -->
+                        <iframe src="https://swapkart.vercel.app" scrolling="no" tabindex="-1"></iframe>
                     </div>
-                </div>
+                </a>
+                
                 <div class="project-info">
                     <h2>SwapKart<br>Marketplace</h2>
                     <p style="color: #aaa; margin-bottom: 40px; max-width: 400px; font-size: 18px; line-height: 1.6;">
-                        A high-performance barter system. Features real-time search, Supabase authentication, and AI-driven recommendations.
+                        A fully functional barter marketplace built in 48 hours. Features real-time messaging, secure Google Auth, and instant search.
                     </p>
                     <div class="tags">
                         <span>React</span>
-                        <span>Supabase</span>
-                        <span>Three.js</span>
+                        <span>Firebase</span>
+                        <span>Tailwind</span>
                     </div>
                     <br>
-                    <a href="#" class="btn-magnetic hover-trigger">View Case Study</a>
+                    <a href="https://swapkart.vercel.app" target="_blank" class="btn-magnetic hover-trigger">Launch App ↗</a>
                 </div>
             </div>
         </section>
 
         <!-- CONTACT -->
         <section class="section" style="align-items: center; text-align: center; padding-bottom: 100px;">
-            <h2 style="font-size: 1.5vw; margin-bottom: 30px; color: #888; text-transform: uppercase; letter-spacing: 2px;">Ready to dominate?</h2>
+            <h2 style="font-size: clamp(16px, 1.5vw, 24px); margin-bottom: 30px; color: #888; text-transform: uppercase; letter-spacing: 2px;">Have an idea?</h2>
             <h1 class="mega-title" style="font-size: 11vw; margin-bottom: 0;">
                 <a href="mailto:pathanaawej0@gmail.com" style="text-decoration: none; color: white;" class="hover-trigger">LET'S TALK</a>
             </h1>
@@ -297,82 +318,58 @@
     </main>
 
     <script>
-        // --- A. SMOOTH SCROLL (Lenis) ---
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smooth: true,
-        });
-        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-        requestAnimationFrame(raf);
+        // --- 1. SMOOTH SCROLL ---
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+        }
 
-        // --- B. CURSOR LOGIC (High Performance Fix) ---
-        // We use gsap.quickTo for 60fps performance without lag or glitches
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-        
-        // Create quick setters for better performance
-        const xSetDot = gsap.quickSetter(cursorDot, "x", "px");
-        const ySetDot = gsap.quickSetter(cursorDot, "y", "px");
-        const xSetOutline = gsap.quickTo(cursorOutline, "x", {duration: 0.5, ease: "power3"});
-        const ySetOutline = gsap.quickTo(cursorOutline, "y", {duration: 0.5, ease: "power3"});
+        // --- 2. CURSOR LOGIC (DESKTOP ONLY) ---
+        if (window.matchMedia("(min-width: 769px)").matches) {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            
+            // Use GSAP QuickSetter for Performance
+            const xSetDot = gsap.quickSetter(cursorDot, "x", "px");
+            const ySetDot = gsap.quickSetter(cursorDot, "y", "px");
+            const xSetOutline = gsap.quickTo(cursorOutline, "x", {duration: 0.5, ease: "power3"});
+            const ySetOutline = gsap.quickTo(cursorOutline, "y", {duration: 0.5, ease: "power3"});
 
-        window.addEventListener('mousemove', (e) => {
-            // Move dot instantly
-            xSetDot(e.clientX);
-            ySetDot(e.clientY);
-            // Move outline smoothly
-            xSetOutline(e.clientX);
-            ySetOutline(e.clientY);
-        });
+            window.addEventListener('mousemove', (e) => {
+                xSetDot(e.clientX); ySetDot(e.clientY);
+                xSetOutline(e.clientX); ySetOutline(e.clientY);
+            });
 
-        // Hover Interactions
-        const triggers = document.querySelectorAll('.hover-trigger');
-        triggers.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                gsap.to(cursorOutline, {
-                    scale: 2.5,
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
-                    borderColor: "transparent",
-                    duration: 0.3
+            // Hover Effects
+            document.querySelectorAll('.hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    gsap.to(cursorOutline, { scale: 2.5, backgroundColor: "rgba(255, 255, 255, 0.1)", duration: 0.3 });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(cursorOutline, { scale: 1, backgroundColor: "transparent", duration: 0.3 });
                 });
             });
-            el.addEventListener('mouseleave', () => {
-                gsap.to(cursorOutline, {
-                    scale: 1,
-                    backgroundColor: "transparent",
-                    borderColor: "rgba(255, 255, 255, 0.5)",
-                    duration: 0.3
-                });
+        }
+
+        // --- 3. 3D CARD TILT (DESKTOP ONLY) ---
+        if (window.matchMedia("(min-width: 769px)").matches) {
+            const card = document.getElementById('tilt-card');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rotateX = ((y - rect.height/2) / rect.height/2) * -10;
+                const rotateY = ((x - rect.width/2) / rect.width/2) * 10;
+                
+                gsap.to(card, { rotationX: rotateX, rotationY: rotateY, duration: 0.5, ease: "power2.out" });
             });
-        });
-
-        // --- C. 3D CARD TILT EFFECT ---
-        const card = document.getElementById('tilt-card');
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = ((y - centerY) / centerY) * -5; // Max rotation deg
-            const rotateY = ((x - centerX) / centerX) * 5;
-
-            gsap.to(card, {
-                rotationX: rotateX,
-                rotationY: rotateY,
-                duration: 0.5,
-                ease: "power2.out"
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
             });
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
-        });
+        }
 
-        // --- D. THREE.JS STARS ---
+        // --- 4. THREE.JS BACKGROUND ---
         const scene = new THREE.Scene();
         scene.fog = new THREE.FogExp2(0x000000, 0.002);
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -381,11 +378,11 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         const geometry = new THREE.BufferGeometry();
-        const count = 4000;
+        const count = 2000; // Reduced particle count for mobile performance
         const positions = new Float32Array(count * 3);
         for(let i=0; i<count*3; i++) positions[i] = (Math.random()-0.5)*30;
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        const material = new THREE.PointsMaterial({ size: 0.02, color: 0xffffff, transparent: true, opacity: 0.6 });
+        const material = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0.4 });
         const stars = new THREE.Points(geometry, material);
         scene.add(stars);
         camera.position.z = 5;
@@ -397,34 +394,29 @@
         function animate() {
             const t = clock.getElapsedTime();
             stars.rotation.y = t * 0.05;
-            stars.rotation.z = t * 0.02;
-            camera.position.y = -scrollY * 0.002; // Parallax
-            camera.position.z = 5 + (mouseY * 0.001); // Subtle depth on mouse
+            // Subtle parallax
+            camera.position.y = -window.scrollY * 0.001;
             renderer.render(scene, camera);
             requestAnimationFrame(animate);
         }
         animate();
 
-        // --- E. TEXT REVEALS ---
+        // --- 5. TEXT ANIMATIONS ---
         gsap.registerPlugin(ScrollTrigger);
         
-        // Split text logic
         document.querySelectorAll('.line').forEach(line => {
-            line.innerHTML = line.textContent.split('').map(char => 
-                `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`
-            ).join('');
+            line.innerHTML = line.textContent.split('').map(char => `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
         });
 
         window.onload = () => {
             const tl = gsap.timeline();
-            // Preloader sequence
-            tl.to(".loader-text", { opacity: 0, duration: 0.5, delay: 1 })
+            tl.to(".loader-text", { opacity: 0, duration: 0.5, delay: 0.5 })
               .to(".preloader", { height: 0, duration: 1, ease: "power4.inOut" })
               .to(".char", { y: 0, stagger: 0.03, duration: 1, ease: "power3.out" }, "-=0.5")
-              .from(".subtitle", { opacity: 0, y: 20, duration: 1 }, "-=0.8");
+              .from(".subtitle", { opacity: 0, y: 20, duration: 1 }, "-=0.8")
+              .from(".aurora", { opacity: 0, duration: 2 }, "-=1");
         };
         
-        // Resize fix
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
