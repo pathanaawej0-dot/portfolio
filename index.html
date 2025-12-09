@@ -404,8 +404,8 @@
                 <div class="line">Of SaaS</div>
             </h1>
             <p class="subtitle">
-                I don't just write code. I build engines of profit.<br>
-                Full-Stack AI Developer. 7 Days to MVP.
+                Professional Fullstack Web Developer. Fast Work.<br>
+                10+ Happy Clients. 30+ Projects Delivered.
             </p>
         </section>
 
@@ -429,31 +429,54 @@
                 style="color: var(--accent); text-transform: uppercase; margin-bottom: 50px; letter-spacing: 2px; font-weight: 600;">
                 Selected Work</h6>
 
+            <!-- LEAP360 -->
             <div class="project-container">
-                <!-- The Link to SwapKart -->
-                <a href="https://swapkart.vercel.app" target="_blank" class="project-visual hover-trigger"
-                    id="tilt-card">
+                <a href="https://leap360.vercel.app/" target="_blank" class="project-visual hover-trigger tilt-card">
                     <div class="live-badge">LIVE DEMO</div>
                     <div class="iframe-wrapper">
-                        <!-- Iframe preview of the real app -->
-                        <iframe src="https://swapkart.vercel.app" scrolling="no" tabindex="-1"></iframe>
+                        <iframe src="https://leap360.vercel.app/" scrolling="no" tabindex="-1"></iframe>
                     </div>
                 </a>
-
                 <div class="project-info">
-                    <h2>SwapKart<br>Marketplace</h2>
+                    <h2>LEAP<br>Student Builder Network</h2>
                     <p style="color: #aaa; margin-bottom: 40px; max-width: 400px; font-size: 18px; line-height: 1.6;">
-                        A fully functional barter marketplace built in 48 hours. Features real-time messaging, secure
-                        Google Auth, and instant search.
+                        The ultimate network for student builders. Connect, collaborate, and ship projects with
+                        like-minded peers.
                     </p>
                     <div class="tags">
-                        <span>React</span>
-                        <span>Firebase</span>
+                        <span>Next.js</span>
                         <span>Tailwind</span>
+                        <span>Framer Motion</span>
                     </div>
                     <br>
-                    <a href="https://swapkart.vercel.app" target="_blank" class="btn-magnetic hover-trigger">Launch App
+                    <a href="https://leap360.vercel.app/" target="_blank" class="btn-magnetic hover-trigger">Launch App
                         ↗</a>
+                </div>
+            </div>
+
+            <!-- PRISM -->
+            <div class="project-container">
+                <a href="https://prism-mauve-phi.vercel.app" target="_blank"
+                    class="project-visual hover-trigger tilt-card">
+                    <div class="live-badge">LIVE DEMO</div>
+                    <div class="iframe-wrapper">
+                        <iframe src="https://prism-mauve-phi.vercel.app" scrolling="no" tabindex="-1"></iframe>
+                    </div>
+                </a>
+                <div class="project-info">
+                    <h2>PRISM<br>Deep Space Academy</h2>
+                    <p style="color: #aaa; margin-bottom: 40px; max-width: 400px; font-size: 18px; line-height: 1.6;">
+                        Learn anything from First Principles with AI-powered guidance. A futuristic educational
+                        platform.
+                    </p>
+                    <div class="tags">
+                        <span>Next.js</span>
+                        <span>Clerk</span>
+                        <span>AI</span>
+                    </div>
+                    <br>
+                    <a href="https://prism-mauve-phi.vercel.app" target="_blank"
+                        class="btn-magnetic hover-trigger">Launch App ↗</a>
                 </div>
             </div>
         </section>
@@ -508,18 +531,19 @@
 
         // --- 3. 3D CARD TILT (DESKTOP ONLY) ---
         if (window.matchMedia("(min-width: 769px)").matches) {
-            const card = document.getElementById('tilt-card');
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const rotateX = ((y - rect.height / 2) / rect.height / 2) * -10;
-                const rotateY = ((x - rect.width / 2) / rect.width / 2) * 10;
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const rotateX = ((y - rect.height / 2) / rect.height / 2) * -10;
+                    const rotateY = ((x - rect.width / 2) / rect.width / 2) * 10;
 
-                gsap.to(card, { rotationX: rotateX, rotationY: rotateY, duration: 0.5, ease: "power2.out" });
-            });
-            card.addEventListener('mouseleave', () => {
-                gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
+                    gsap.to(card, { rotationX: rotateX, rotationY: rotateY, duration: 0.5, ease: "power2.out" });
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
+                });
             });
         }
 
