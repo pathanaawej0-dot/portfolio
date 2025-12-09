@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aawej | AI SaaS Architect</title>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syncopate:wght@700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- CSS RESET & CORE --- */
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --accent: #8b5cf6;
+            /* Vivid Violet */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- DESKTOP CURSOR (Hidden on Mobile) --- */
+        @media (min-width: 769px) {
+            * {
+                cursor: none;
+            }
+
+            .cursor-dot,
+            .cursor-outline {
+                position: fixed;
+                top: 0;
+                left: 0;
+                border-radius: 50%;
+                z-index: 9999;
+                pointer-events: none;
+                transform: translate(-50%, -50%);
+            }
+
+            .cursor-dot {
+                width: 8px;
+                height: 8px;
+                background: white;
+            }
+
+            .cursor-outline {
+                width: 50px;
+                height: 50px;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                background: transparent;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .cursor-dot,
+            .cursor-outline {
+                display: none !important;
+            }
+
+            * {
+                cursor: auto !important;
+            }
+        }
+
+        /* --- BACKGROUNDS --- */
+        #webgl {
+            position: fixed;
+            top: 0;
+            left: 0;
+            outline: none;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .aurora {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 80vw;
+            height: 80vw;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(0, 0, 0, 0) 60%);
+            transform: translate(-50%, -50%);
+            z-index: -2;
+            pointer-events: none;
+            animation: breathe 10s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+
+            0%,
+            100% {
+                opacity: 0.4;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.06;
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        /* --- LAYOUT --- */
+        .section {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 5vw;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1.mega-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 9vw;
+            line-height: 0.85;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            mix-blend-mode: difference;
+            letter-spacing: -2px;
+        }
+
+        .line {
+            overflow: hidden;
+            display: block;
+        }
+
+        .char {
+            display: inline-block;
+            transform: translateY(110%);
+            will-change: transform;
+        }
+
+        p.subtitle {
+            font-size: 1.6rem;
+            max-width: 700px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 5px;
+            font-weight: 300;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-family: 'Syncopate';
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 20px;
+        }
+
+        .menu-item {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* --- PROJECT CARDS (3D TILT) --- */
+        .project-container {
+            display: flex;
+            align-items: center;
+            gap: 5vw;
+            margin-top: 5vh;
+            perspective: 1000px;
+        }
+
+        .project-visual {
+            width: 50vw;
+            height: 60vh;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            /* Indicates clickable */
+        }
+
+        /* Iframe wrapper to make it look like a window */
+        .iframe-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            pointer-events: none;
+            /* Clicks go to the container link */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            transform: scale(1);
+            opacity: 0.7;
+            transition: opacity 0.5s;
+        }
+
+        .project-visual:hover iframe {
+            opacity: 1;
+        }
+
+        .live-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #22c55e;
+            color: black;
+            font-weight: 800;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 100px;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        }
+
+        .project-info h2 {
+            font-size: 4vw;
+            margin-bottom: 20px;
+        }
+
+        .tags span {
+            display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 12px;
+            margin-right: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-magnetic {
+            display: inline-block;
+            padding: 20px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 100px;
+            margin-top: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-magnetic:hover {
+            background: white;
+            color: black;
+            border-color: white;
+        }
+
+        /* --- PRELOADER --- */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-text {
+            font-family: 'Syncopate';
+            font-size: 24px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            h1.mega-title {
+                font-size: 14vw;
+                margin-bottom: 1.5rem;
+            }
+
+            p.subtitle {
+                font-size: 1.1rem;
+            }
+
+            .project-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 30px;
+            }
+
+            .project-visual {
+                width: 100%;
+                height: 40vh;
+            }
+
+            .project-info h2 {
+                font-size: 8vw;
+            }
+
+            .section {
+                padding: 80px 5vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- UI ELEMENTS -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="grain"></div>
+    <div class="aurora"></div>
+
+    <div class="preloader">
+        <div class="loader-text">AAWEJ SYSTEM...</div>
+    </div>
+
+    <nav>
+        <div class="logo hover-trigger">AAWEJ</div>
+        <a href="https://wa.me/917888062027" target="_blank" class="menu-item hover-trigger">Hire Me</a>
+    </nav>
+
+    <canvas id="webgl"></canvas>
+
+    <main id="smooth-wrapper">
+
+        <!-- HERO -->
+        <section class="section" id="home">
+            <h1 class="mega-title">
+                <div class="line">Engineering</div>
+                <div class="line">The Future</div>
+                <div class="line">Of SaaS</div>
+            </h1>
+            <p class="subtitle">
+                I don't just write code. I build engines of profit.<br>
+                Full-Stack AI Developer. 7 Days to MVP.
+            </p>
+        </section>
+
+        <!-- THE PHILOSOPHY -->
+        <section class="section">
+            <div style="max-width: 900px;">
+                <h6
+                    style="color: var(--accent); text-transform: uppercase; margin-bottom: 30px; letter-spacing: 2px; font-weight: 600;">
+                    The Methodology</h6>
+                <h2 style="font-size: clamp(24px, 3.5vw, 48px); line-height: 1.3; font-weight: 400;">
+                    Traditional agencies are slow. They love meetings. I love shipping.
+                    Using <span style="color: #fff; border-bottom: 2px solid var(--accent);">AI-Native Workflows</span>,
+                    I compress 3 months of development into 1 week.
+                </h2>
+            </div>
+        </section>
+
+        <!-- SELECTED WORK (SWAPKART) -->
+        <section class="section">
+            <h6
+                style="color: var(--accent); text-transform: uppercase; margin-bottom: 50px; letter-spacing: 2px; font-weight: 600;">
+                Selected Work</h6>
+
+            <div class="project-container">
+                <!-- The Link to SwapKart -->
+                <a href="https://swapkart.vercel.app" target="_blank" class="project-visual hover-trigger"
+                    id="tilt-card">
+                    <div class="live-badge">LIVE DEMO</div>
+                    <div class="iframe-wrapper">
+                        <!-- Iframe preview of the real app -->
+                        <iframe src="https://swapkart.vercel.app" scrolling="no" tabindex="-1"></iframe>
+                    </div>
+                </a>
+
+                <div class="project-info">
+                    <h2>SwapKart<br>Marketplace</h2>
+                    <p style="color: #aaa; margin-bottom: 40px; max-width: 400px; font-size: 18px; line-height: 1.6;">
+                        A fully functional barter marketplace built in 48 hours. Features real-time messaging, secure
+                        Google Auth, and instant search.
+                    </p>
+                    <div class="tags">
+                        <span>React</span>
+                        <span>Firebase</span>
+                        <span>Tailwind</span>
+                    </div>
+                    <br>
+                    <a href="https://swapkart.vercel.app" target="_blank" class="btn-magnetic hover-trigger">Launch App
+                        ↗</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section class="section" style="align-items: center; text-align: center; padding-bottom: 100px;">
+            <h2
+                style="font-size: clamp(16px, 1.5vw, 24px); margin-bottom: 30px; color: #888; text-transform: uppercase; letter-spacing: 2px;">
+                Have an idea?</h2>
+            <h1 class="mega-title" style="font-size: 11vw; margin-bottom: 0;">
+                <a href="https://wa.me/917888062027" target="_blank" style="text-decoration: none; color: white;"
+                    class="hover-trigger">Chat on WhatsApp</a>
+            </h1>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. SMOOTH SCROLL ---
+        if (typeof Lenis !== 'undefined') {
+            const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+        }
+
+        // --- 2. CURSOR LOGIC (DESKTOP ONLY) ---
+        if (window.matchMedia("(min-width: 769px)").matches) {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+
+            // Use GSAP QuickSetter for Performance
+            const xSetDot = gsap.quickSetter(cursorDot, "x", "px");
+            const ySetDot = gsap.quickSetter(cursorDot, "y", "px");
+            const xSetOutline = gsap.quickTo(cursorOutline, "x", { duration: 0.5, ease: "power3" });
+            const ySetOutline = gsap.quickTo(cursorOutline, "y", { duration: 0.5, ease: "power3" });
+
+            window.addEventListener('mousemove', (e) => {
+                xSetDot(e.clientX); ySetDot(e.clientY);
+                xSetOutline(e.clientX); ySetOutline(e.clientY);
+            });
+
+            // Hover Effects
+            document.querySelectorAll('.hover-trigger').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    gsap.to(cursorOutline, { scale: 2.5, backgroundColor: "rgba(255, 255, 255, 0.1)", duration: 0.3 });
+                });
+                el.addEventListener('mouseleave', () => {
+                    gsap.to(cursorOutline, { scale: 1, backgroundColor: "transparent", duration: 0.3 });
+                });
+            });
+        }
+
+        // --- 3. 3D CARD TILT (DESKTOP ONLY) ---
+        if (window.matchMedia("(min-width: 769px)").matches) {
+            const card = document.getElementById('tilt-card');
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const rotateX = ((y - rect.height / 2) / rect.height / 2) * -10;
+                const rotateY = ((x - rect.width / 2) / rect.width / 2) * 10;
+
+                gsap.to(card, { rotationX: rotateX, rotationY: rotateY, duration: 0.5, ease: "power2.out" });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
+            });
+        }
+
+        // --- 4. THREE.JS BACKGROUND ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x000000, 0.002);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.querySelector('#webgl'), antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const geometry = new THREE.BufferGeometry();
+        const count = 2000; // Reduced particle count for mobile performance
+        const positions = new Float32Array(count * 3);
+        for (let i = 0; i < count * 3; i++) positions[i] = (Math.random() - 0.5) * 30;
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({ size: 0.03, color: 0xffffff, transparent: true, opacity: 0.4 });
+        const stars = new THREE.Points(geometry, material);
+        scene.add(stars);
+        camera.position.z = 5;
+
+        let mouseY = 0;
+        window.addEventListener('mousemove', (e) => { mouseY = e.clientY });
+
+        const clock = new THREE.Clock();
+        function animate() {
+            const t = clock.getElapsedTime();
+            stars.rotation.y = t * 0.05;
+            // Subtle parallax
+            camera.position.y = -window.scrollY * 0.001;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 5. TEXT ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll('.line').forEach(line => {
+            line.innerHTML = line.textContent.split('').map(char => `<span class="char">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+        });
+
+        window.onload = () => {
+            const tl = gsap.timeline();
+            tl.to(".loader-text", { opacity: 0, duration: 0.5, delay: 0.5 })
+                .to(".preloader", { height: 0, duration: 1, ease: "power4.inOut" })
+                .to(".char", { y: 0, stagger: 0.03, duration: 1, ease: "power3.out" }, "-=0.5")
+                .from(".subtitle", { opacity: 0, y: 20, duration: 1 }, "-=0.8")
+                .from(".aurora", { opacity: 0, duration: 2 }, "-=1");
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+    </script>
+</body>
+
+</html>
